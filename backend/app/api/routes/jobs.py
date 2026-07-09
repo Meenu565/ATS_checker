@@ -85,6 +85,20 @@ def delete_job(
     job = db.query(Job).filter(Job.id == id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+        
+    from app.db.models.resume import Resume, Candidate
+    from app.db.models.ats_score import AtsScore
+    from app.db.models.company_analysis import CompanyAnalysis
+    from app.db.models.threshold import ThresholdResult
+    from app.db.models.candidate_classification import CandidateClassification
+    
+    db.query(CandidateClassification).filter(CandidateClassification.job_id == id).delete()
+    db.query(ThresholdResult).filter(ThresholdResult.job_id == id).delete()
+    db.query(CompanyAnalysis).filter(CompanyAnalysis.job_id == id).delete()
+    db.query(AtsScore).filter(AtsScore.job_id == id).delete()
+    db.query(Candidate).filter(Candidate.job_id == id).delete()
+    db.query(Resume).filter(Resume.job_id == id).delete()
+    
     db.delete(job)
     db.commit()
 
